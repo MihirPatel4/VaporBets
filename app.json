@@ -24,6 +24,11 @@
       "eas": {
         "projectId": "5060c578-c9d1-4f33-bd90-6c9e6c7a3473"
       }
-    }
+    },
+    "scheme": "vaporbets-scheme",
+    "plugins": [
+      "expo-router",
+      "expo-status-bar"
+    ]
   }
 }
