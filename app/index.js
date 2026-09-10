@@ -1,49 +1,65 @@
+import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+import { apiRequest } from '../lib/auth';
 
 const App = () => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    //AbortController cancels the async operation and is used to keep track of loading status
     const controller = new AbortController();
 
-    async function loadEvents() {
+    //load home page if user is authenticated
+    const loadHome = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/events`, {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
+        await apiRequest('/auth/me', { signal: controller.signal });
+        
+        if (controller.signal.aborted) {
+          return;
         }
 
-        const data = await response.json();
+        setIsAuthenticated(true);
+
+        const { data } = await apiRequest('/events', { signal: controller.signal });
         setEvents(Array.isArray(data.events) ? data.events : []);
       } 
       catch (error) {
-        if (error.name !== 'AbortError') {
+        if (error.name !== 'AbortError' && error.status !== 401) {
           setHasError(true);
-          console.log(error);
         }
       } 
       finally {
         if (!controller.signal.aborted) {
           setIsLoading(false);
+          setIsCheckingSession(false);
         }
       }
     }
 
-    loadEvents();
+    loadHome();
     return () => controller.abort();
   }, []);
 
+  //loading animation
+  if (isCheckingSession) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  //send user to login page if not authenticated
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
+  //loading animation
   if (isLoading) {
-    //loading animation
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
