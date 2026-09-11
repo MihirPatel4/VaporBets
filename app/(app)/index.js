@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import { apiRequest } from '../lib/auth';
+import { apiRequest } from '../../lib/auth';
 
 const App = () => {
   const [events, setEvents] = useState([]);
