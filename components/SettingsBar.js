@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pressable, Text, View, StyleSheet, Modal } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { Pressable, Text, View, StyleSheet, Modal, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { apiRequest, clearAuthCookie } from '../lib/auth';
@@ -7,11 +7,28 @@ import { apiRequest, clearAuthCookie } from '../lib/auth';
 const SettingsBar = () => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const slideX = useRef(new Animated.Value(-320)).current;
+
+  useEffect(() => {
+    Animated.timing(slideX, {
+      toValue: isMenuOpen ? 0 : -320,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
+  }, [isMenuOpen]);
 
   const navigateTo = (path) => {
-    setIsMenuOpen(false);
+    handleCloseMenu();
     router.push(path);
-  }
+  };
+
+  const handleCloseMenu = () => {
+    Animated.timing(slideX, {
+      toValue: -320,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => setIsMenuOpen(false));
+  };
 
   const handleLogOut = async () => {
     try {
@@ -32,12 +49,12 @@ const SettingsBar = () => {
         </Pressable>
         <Text style={styles.title}>VaporBets</Text>
       </View>
-      <Modal animationType='slide' onRequestClose={() => setIsMenuOpen(false)} transparent visible={isMenuOpen}>
+      <Modal animationType='none' onRequestClose={() => setIsMenuOpen(false)} transparent visible={isMenuOpen}>
         <SafeAreaView style={styles.overlay}>
-          <View style={styles.drawer}>
+          <Animated.View style={[styles.drawer, {transform: [{ translateX: slideX }]}]}>
             <View style={styles.drawerHeader}>
               <Text style={styles.drawerTitle}>VaporBets</Text>
-              <Pressable accessibilityLabel='Close settings menu' onPress={() => setIsMenuOpen(false)}>
+              <Pressable accessibilityLabel='Close settings menu' onPress={handleCloseMenu}>
                 <Text style={styles.closeButton}>×</Text>
               </Pressable>
             </View>
@@ -60,7 +77,7 @@ const SettingsBar = () => {
                 <Text style={styles.logout}>Log out</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
@@ -102,6 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     padding: 24,
+    width: 320,
   },
   drawerHeader: {
     alignItems: 'center',
