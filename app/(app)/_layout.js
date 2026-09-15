@@ -1,12 +1,12 @@
 import { Stack } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import NavBar from '../../components/NavBar';
+import SettingsBar from '../../components/SettingsBar';
 
 const Root = () => {
   return (
     <View style={styles.container}>
+      <SettingsBar />
       <Stack screenOptions={{ headerShown: false }} />
-      <NavBar />
     </View>
   );
 };
