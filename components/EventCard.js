@@ -1,12 +1,15 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-const EventCard = (props) => {
+const EventCard = (id, title, outcomes = []) => {
   const router = useRouter();
 
   return (
-    <Pressable style={styles.card} onPress={() => router.push(`/event/${props.id}`)}>
-      <Text>{props.title}</Text>
+    <Pressable style={styles.card} onPress={() => router.push(`/event/${id}`)}>
+      <Text>{title}</Text>
+      {outcomes.map((outcome) => (
+        <Text key={outcome.id}>{outcome.team}: {(Number(outcome.probability) * 100).toFixed(1)}%</Text>
+      ))}
     </Pressable>
   );
 };
