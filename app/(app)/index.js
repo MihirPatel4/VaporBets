@@ -97,7 +97,7 @@ const EventCard = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -109,11 +109,21 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
+    backgroundColor: '#F3F4F6',
   },
   card: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    paddingVertical: 16,
+    backgroundColor: '#FFF',
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    borderWidth: 1,
+    elevation: 3,
+    marginBottom: 12,
+    padding: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    margin: 20,
   },
 });
 
