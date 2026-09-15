@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-const EventCard = (id, title, outcomes = []) => {
+const EventCard = ({ id, title, outcomes = [] }) => {
   const router = useRouter();
 
   return (
