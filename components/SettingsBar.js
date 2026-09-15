@@ -8,12 +8,9 @@ const SettingsBar = () => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleMenuOpen = () => {
-    setIsMenuOpen(true);
-  }
-
-  const handleMenuClose = () => {
+  const navigateTo = (path) => {
     setIsMenuOpen(false);
+    router.push(path);
   }
 
   const handleLogOut = async () => {
@@ -30,21 +27,34 @@ const SettingsBar = () => {
   return (
     <SafeAreaView>
       <View style={styles.bar}>
-        <Pressable accessibilityLabel='Open side bar' onPress={handleMenuOpen} style={styles.menuButton}>
+        <Pressable accessibilityLabel='Open settings menu' onPress={() => setIsMenuOpen(true)} style={styles.menuButton}>
           <Text style={styles.menuIcon}>≡</Text>
         </Pressable>
         <Text style={styles.title}>VaporBets</Text>
       </View>
-      <Modal animationType='slide' onRequestClose={handleMenuClose} transparent visible={isMenuOpen}>
+      <Modal animationType='slide' onRequestClose={() => setIsMenuOpen(false)} transparent visible={isMenuOpen}>
         <SafeAreaView style={styles.overlay}>
           <View style={styles.drawer}>
             <View style={styles.drawerHeader}>
               <Text style={styles.drawerTitle}>VaporBets</Text>
-              <Pressable accessibilityLabel='Close menu' onPress={handleMenuClose}>
+              <Pressable accessibilityLabel='Close settings menu' onPress={() => setIsMenuOpen(false)}>
                 <Text style={styles.closeButton}>×</Text>
               </Pressable>
             </View>
-            <View style={styles.linksSection}></View>
+            <View style={styles.linksSection}>
+              <Pressable onPress={() => navigateTo('/account-settings')}>
+                <Text style={styles.link}>Account Settings</Text>
+              </Pressable>
+              <Pressable onPress={() => navigateTo('/friends')}>
+                <Text style={styles.link}>Friends</Text>
+              </Pressable>
+              <Pressable onPress={() => navigateTo('/bookmarks')}>
+                <Text style={styles.link}>Bookmarks</Text>
+              </Pressable>
+              <Pressable onPress={() => navigateTo('/notification-settings')}>
+                <Text style={styles.link}>Notification Settings</Text>
+              </Pressable>
+            </View>
             <View style={styles.logoutSection}>
               <Pressable onPress={handleLogOut}>
                 <Text style={styles.logout}>Log out</Text>
