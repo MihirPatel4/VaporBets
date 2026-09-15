@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   drawer: {
     backgroundColor: '#F5F0E8',
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     padding: 24,
   },
   drawerHeader: {
@@ -125,12 +125,15 @@ const styles = StyleSheet.create({
     color: '#385B63',
     fontSize: 18,
     fontWeight: '700',
+    borderBottomColor: '#D9D2C8',
+    borderBottomWidth: 1,
   },
   logoutSection: {
     borderTopColor: '#D9D2C8',
     borderTopWidth: 1,
     paddingTop: 24,
     marginLeft: 24,
+    marginTop: 'auto',
   },
   logout: {
     color: '#B33D32',
