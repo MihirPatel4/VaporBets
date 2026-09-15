@@ -87,6 +87,8 @@ const App = () => {
 };
 
 const EventCard = (props) => {
+  const router = useRouter();
+
   return (
     <Pressable style={styles.card} onPress={() => router.push(`/event/${props.id}`)}>
       <Text>{props.title}</Text>
