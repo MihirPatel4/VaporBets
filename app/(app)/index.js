@@ -2,6 +2,7 @@ import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View, Pressable } from 'react-native';
 import { apiRequest } from '../../lib/auth';
+import EventCard from '../../components/EventCard';
 
 const App = () => {
   const [events, setEvents] = useState([]);
@@ -86,16 +87,6 @@ const App = () => {
   );
 };
 
-const EventCard = (props) => {
-  const router = useRouter();
-
-  return (
-    <Pressable style={styles.card} onPress={() => router.push(`/event/${props.id}`)}>
-      <Text>{props.title}</Text>
-    </Pressable>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -112,20 +103,6 @@ const styles = StyleSheet.create({
   list: {
     padding: 16,
     backgroundColor: '#F3F4F6',
-  },
-  card: {
-    backgroundColor: '#FFF',
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    borderWidth: 1,
-    elevation: 3,
-    marginBottom: 12,
-    padding: 40,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    margin: 20,
   },
 });
 
