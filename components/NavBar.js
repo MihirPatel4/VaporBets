@@ -10,13 +10,13 @@ const NavBar = () => {
     <SafeAreaView edges={['left', 'right', 'bottom']}>
       <View style={styles.bar}>
         <Pressable onPress={() => router.push('/')}>
-          <Text style={pathname === '/' ? styles.active : styles.label}>Live</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push('/')}>
-          <Text style={pathname === '/' ? styles.active : styles.label}>Upcoming</Text>
+          <Text style={pathname === '/' ? styles.active : styles.label}>Events</Text>
         </Pressable>
         <Pressable onPress={() => router.push('/bets')}>
           <Text style={pathname === '/' ? styles.active : styles.label}>Bets</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push('/leaderboard')}>
+          <Text style={pathname === '/' ? styles.active : styles.label}>Leaderboard</Text>
         </Pressable>
         <Pressable onPress={() => router.push('/profile')}>
           <Text style={pathname === '/' ? styles.active : styles.label}>Profile</Text>
