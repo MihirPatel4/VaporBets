@@ -1,6 +1,6 @@
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View, Pressable } from 'react-native';
 import { apiRequest } from '../../lib/auth';
 
 const App = () => {
@@ -81,16 +81,16 @@ const App = () => {
       data={events}
       keyExtractor={(event) => String(event.id)}
       ListEmptyComponent={<Text>No sports events are available.</Text>}
-      renderItem={({ item }) => <EventCard title={item.title} />}
+      renderItem={({ item }) => <EventCard id={item.id} title={item.title} />}
     />
   );
 };
 
 const EventCard = (props) => {
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={() => router.push(`/event/${props.id}`)}>
       <Text>{props.title}</Text>
-    </View>
+    </Pressable>
   );
 };
 
