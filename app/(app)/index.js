@@ -82,7 +82,10 @@ const App = () => {
       data={events}
       keyExtractor={(event) => String(event.id)}
       ListEmptyComponent={<Text>No sports events are available.</Text>}
-      renderItem={({ item }) => <EventCard id={item.id} title={item.title} outcomes={item.outcomes} />}
+      renderItem={({ item }) => {
+        const moneylineMarket = item.markets?.find((market) => market.sportsMarketType === 'moneyline');
+        return (<EventCard id={item.id} title={item.title} outcomes={moneylineMarket?.outcomes ?? []} />);
+      }}
     />
   );
 };
