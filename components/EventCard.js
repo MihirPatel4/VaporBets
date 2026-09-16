@@ -6,7 +6,7 @@ const EventCard = ({ id, title, outcomes = [] }) => {
 
   return (
     <Pressable style={styles.card} onPress={() => router.push(`/event/${id}`)}>
-      <Text>{title}</Text>
+      <Text style={styles.title}>{title}</Text>
       {outcomes.map((outcome) => (
         <Text key={outcome.id}>{outcome.team}: {(Number(outcome.probability) * 100).toFixed(1)}%</Text>
       ))}
@@ -28,6 +28,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     margin: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    paddingBottom: 12,
   },
 });
 
