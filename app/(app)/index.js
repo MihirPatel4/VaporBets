@@ -76,15 +76,24 @@ const App = () => {
     );
   }
 
+  const visibleEvents = events.filter((event) => event.status !== 'COMPLETED');
+
   return (
     <FlatList
-      contentContainerStyle={events.length === 0 ? styles.centered : styles.list}
-      data={events}
+      contentContainerStyle={visibleEvents.length === 0 ? styles.centered : styles.list}
+      data={visibleEvents}
       keyExtractor={(event) => String(event.id)}
       ListEmptyComponent={<Text>No sports events are available.</Text>}
       renderItem={({ item }) => {
         const moneylineMarket = item.markets?.find((market) => market.sportsMarketType === 'moneyline');
-        return (<EventCard id={item.id} title={item.title} outcomes={moneylineMarket?.outcomes ?? []} />);
+        return (
+          <EventCard 
+            id={item.id}
+            title={item.title}
+            startTime={item.start_time}
+            outcomes={moneylineMarket?.outcomes ?? []}
+          />
+        );
       }}
     />
   );
