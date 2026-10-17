@@ -1,12 +1,24 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-const EventCard = ({ id, title, outcomes = [] }) => {
+const EventCard = ({ id, title, startTime, outcomes = [] }) => {
   const router = useRouter();
+  const startDate = startTime ? new Date(startTime) : null;
+  const formattedStartDate =
+    startDate && !Number.isNaN(startDate.getTime())
+      ? new Intl.DateTimeFormat(undefined, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        }).format(startDate)
+      : null;
 
   return (
     <Pressable style={styles.card} onPress={() => router.push(`/event/${id}`)}>
       <Text style={styles.title}>{title}</Text>
+      <Text style={styles.startDate}>{formattedStartDate}</Text>
       {outcomes.map((outcome) => (
         <Text key={outcome.id}>{outcome.team}: {(Number(outcome.probability) * 100).toFixed(1)}%</Text>
       ))}
@@ -34,6 +46,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingBottom: 12,
   },
+  startDate: {
+    color: '#6B7280',
+    marginBottom: 12,
+  }
 });
 
 export default EventCard;
