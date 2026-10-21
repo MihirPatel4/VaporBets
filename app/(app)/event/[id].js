@@ -41,7 +41,6 @@ const EventPage = () => {
 
   //separate the moneyline market from the others
   const moneylineMarket = event.markets?.find((market) => market.sports_market_type === 'moneyline');
-  const otherMarkets = event.markets?.filter((market) => market.sports_market_type !== 'moneyline' ?? []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -58,14 +57,6 @@ const EventPage = () => {
         </View>
       )}
       <Text style={styles.description}>{event.description || 'No description available.'}</Text>
-      {otherMarkets.map((market) => (
-        <View key={market.id} style={styles.market}>
-          <Text style={styles.marketTitle}>{market.question}</Text>
-          {market.outcomes?.map((outcome) => (
-            <Text key={outcome.id}>{outcome.label}: {(Number(outcome.probability) * 100).toFixed(1)}%</Text>
-          ))}
-        </View>
-      ))}
     </ScrollView>
   );
 };
