@@ -72,7 +72,7 @@ const RegisterForm = ({ onSuccess, onLogin }) => {
 			onSuccess();
 		} 
     catch (requestError) {
-			setError(requestError.message);
+			setError("Invalid or expired verification code");
 		} 
     finally {
 			setIsSubmitting(false);
