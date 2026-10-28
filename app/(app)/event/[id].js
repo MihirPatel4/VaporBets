@@ -1,7 +1,7 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { apiRequest } from "../../../lib/auth";
+import { apiRequest, subscribeToLiveUpdates } from "../../../lib/auth";
 
 const EventPage = () => {
   const { id } = useLocalSearchParams();
@@ -9,6 +9,7 @@ const EventPage = () => {
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [hasLiveUpdateError, setHasLiveUpdateError] = useState(false);
 
   useEffect(() => {
     const loadEvent = async () => {
@@ -26,6 +27,55 @@ const EventPage = () => {
 
     loadEvent();
   }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isLoading) {
+        return;
+      }
+
+      let isActive = true;
+
+      //helper to update data in state
+      const onUpdate = (update) => {
+        setEvent(currentEvent => {
+          if (!currentEvent || String(currentEvent.id) !== String(update.eventId)) {
+            return currentEvent;
+          }
+
+          return {
+            ...currentEvent,
+            markets: currentEvent.markets?.map(market => ({
+              ...market,
+              outcomes: market.outcomes?.map(outcome => (
+                String(outcome.id) === String(update.outcomeId) ? { ...outcome, probability: update.probability } : outcome
+              )),
+            })),
+          };
+        });
+      };
+
+      //helper to update live update error state
+      const onStatusChange = (error) => setHasLiveUpdateError(Boolean(error));
+
+      //helper to fetch fresh event data
+      const onConnected = async () => {
+        const { data } = await apiRequest(`/events/${id}`);
+        if (isActive) {
+          setEvent(data.event);
+        }
+      };
+
+      //function to start the WebSocket subscription and return the cleanup
+      const unsubscribe = subscribeToLiveUpdates(onUpdate, onStatusChange, onConnected);
+
+      //called when the screen loses focus
+      return () => {
+        isActive = false;
+        unsubscribe();
+      };
+    }, [id, isLoading])
+  );
 
   if (isLoading) {
     return <ActivityIndicator style={styles.centered} />
@@ -49,6 +99,7 @@ const EventPage = () => {
       </Pressable>
       <Text style={styles.title}>{event.title}</Text>
       <Text>Status: {event.status}</Text>
+      {hasLiveUpdateError && <Text style={styles.liveUpdateError}>Live updates disconnected. Reconnecting...</Text>}
       {moneylineMarket && (
         <View style={styles.market}>
           {moneylineMarket.outcomes?.map((outcome) => (
@@ -89,6 +140,10 @@ const styles = StyleSheet.create({
   moneylineOutcome: {
     fontSize: 20,
     fontWeight: '600',
+  },
+  liveUpdateError: {
+    color: '#B91C1C',
+    marginTop: 12,
   },
   description: {
     borderTopColor: '#E5E7EB',
