@@ -1,7 +1,7 @@
-import { Redirect, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View, Pressable } from 'react-native';
-import { apiRequest } from '../../lib/auth';
+import { Redirect, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { apiRequest, subscribeToLiveUpdates } from '../../lib/auth';
 import EventCard from '../../components/EventCard';
 
 const App = () => {
@@ -10,6 +10,7 @@ const App = () => {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [hasLiveUpdateError, setHasLiveUpdateError] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -44,6 +45,55 @@ const App = () => {
     loadHome();
     return () => controller.abort();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isAuthenticated || isLoading) {
+        return;
+      }
+
+      let isActive = true;
+
+      //helper to update data in state
+      const onUpdate = (update) => {
+        setEvents(currentEvents => currentEvents.map(event => {
+          if (String(event.id) !== String(update.eventId)) {
+            return event;
+          }
+
+          return {
+            ...event,
+            markets: event.markets?.map(market => ({
+              ...market,
+              outcomes: market.outcomes?.map(outcome => (
+                String(outcome.id) === String(update.outcomeId) ? { ...outcome, probability: update.probability } : outcome
+              )),
+            })),
+          };
+        }));
+      };
+
+      //helper to update live update error state
+      const onStatusChange = (error) => setHasLiveUpdateError(Boolean(error));
+
+      //helper to fetch fresh event data
+      const onConnected = async () => {
+        const { data } = await apiRequest('/events');
+        if (isActive) {
+          setEvents(Array.isArray(data.events) ? data.events : []);
+        }
+      };
+
+      //function to start the WebSocket subscription and return the cleanup
+      const unsubscribe = subscribeToLiveUpdates(onUpdate, onStatusChange, onConnected);
+      
+      //called when the screen loses focus
+      return () => {
+        isActive = false;
+        unsubscribe();
+      };
+    }, [isAuthenticated, isLoading])
+  );
 
   //loading animation
   if (isCheckingSession) {
@@ -84,6 +134,9 @@ const App = () => {
       data={visibleEvents}
       keyExtractor={(event) => String(event.id)}
       ListEmptyComponent={<Text>No sports events are available.</Text>}
+      ListHeaderComponent={
+        hasLiveUpdateError ? <Text style={styles.liveUpdateError}>Live updates disconnected. Reconnecting...</Text> : null
+      }
       renderItem={({ item }) => {
         const moneylineMarket = item.markets?.find((market) => market.sportsMarketType === 'moneyline');
         return (
@@ -115,6 +168,11 @@ const styles = StyleSheet.create({
   list: {
     padding: 16,
     backgroundColor: '#F3F4F6',
+  },
+  liveUpdateError: {
+    color: '#B91C1C',
+    marginBottom: 12,
+    textAlign: 'center',
   },
 });
 
